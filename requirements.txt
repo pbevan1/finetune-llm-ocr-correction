@@ -2,3 +2,4 @@ datasets==2.19.1
 openai==1.30.5
 pytest==8.2.1
 tiktoken==0.7.0
+pre-commit
