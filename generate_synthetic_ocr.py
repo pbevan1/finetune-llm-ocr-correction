@@ -22,7 +22,7 @@ def get_chat_request(text, model="gpt-4o"):
         },
         {
             "role": "user",
-            "content": f"Here are two examples of corrupted text and their corrections:\n\noriginal```\nTHE OMAHA DAILY BEE, TUESDAY, JUNE 24, 1890 NEWS ABOUT THE BLUFFS Comparatively Little Damage Done by Sunday Night's Storm, SOME EXCEEDINGLY NARROW ESCAPES An Odyssean Memorial Communication Department at H.E. An Unfounded Storm Notice.\n```\ncorrupted```\nTHHJ C M A 14 A1 HAM p 0 _ _ THE OMAHA DAILY BEE , TUEBPAY , JUNE 24 , 1890 , _ _ NEWS ABOUT THE BLUFFS Comparatively Little Damage Done b , Sunday Night's Storm , I , SOME EXCEEDINGLY NARROW ESCAPES An OdiirolloxvH * . Memorial CoiniiionccniKiit I'ro rniiunc nt Ht. AuniliMtiy An Un- fondcd Htiinof NotcH.\n```\n---\noriginal```\nTHE OMAHA DAILY BEE.\nTWENTIETH YEAR. OMAHA, WEDNESDAY MORNING. JUNE 25, 1890. NUMBER 7.\nLICKED UP BY THE FLAMES,\nAn Incendiary Wreaks His Vengeance on Blue Hill, Nebraska.\nNEARLY TWENTY STORES BLOTTED OUT,\nThe Amount of Damage Done Is Estimated at Over Fifty Thousand Dollars, With Comparatively Little Insurance.\nBLUE HILL, Neb., June 24. (Special Telegraph to THE BEE.) At 2:30 this morning a fire broke out simultaneously in two places on the north side of Main street in Blue Hill. The one at the opera house, at almost the extreme east end of the street, was extinguished by the efforts of O. C. J. Longman, Mrs. B. H. Munson and the girl help at the Munson House.\n```\ncorrupted```\nTHE OMAHA ! DAILY BEE.\nTWENTIETH YEAR. OMAHA. WEDNESDAY JMjgNING. ( ! JUNE 25. 1890. NUMBER 7.\nLICKED UP BY THE FLAMES , An Incendiary Wreaks His Vengeance o Blue Hill , Nebraska. NEARLY TWENTY STORES BLOTTED OUT , Tlio Amount of lnmnc Done Iloimlily Kutlmnted .nt Over Fifty Thousand DollurH , With Comparatively Little Insurance.\nBLUB HIM , Neb. , Juno 24. ( Special Tele-pram to TUB BBK. ) At 2M : this morning a.flro broke out simultaneously In two places on the north sldo of Main street in Blue Hill. The ono at the opera house , nt almost the ex treme cast end of the street , was extinguished by the efforts of O. C. 1C. Lolgman , Mrs. B. II. Munson and the girl help at the Muuson Louse. I\n```\n\nGiven the original text below, provide a corrupted version, using the examples as a guide on how the text may become corrupted:\n\noriginal```{text}```",
+            "content": f"Here are three examples of corrupted text and their corrections:\n\noriginal: THE OMAHA DAILY BEE, TUESDAY, JUNE 24, 1890 NEWS ABOUT THE BLUFFS Comparatively Little Damage Done by Sunday Night's Storm, SOME EXCEEDINGLY NARROW ESCAPES An Odyssean Memorial Communication Department at H.E. An Unfounded Storm Notice.\n\ncorrupted: THHJ C M A 14 A1 HAM p 0 _ _ THE OMAHA DAILY BEE , TUEBPAY , JUNE 24 , 1890 , _ _ NEWS ABOUT THE BLUFFS Comparatively Little Damage Done b , Sunday Night's Storm , I , SOME EXCEEDINGLY NARROW ESCAPES An OdiirolloxvH * . Memorial CoiniiionccniKiit I'ro rniiunc nt Ht. AuniliMtiy An Un- fondcd Htiinof NotcH.\n\n---\n\noriginal: THE OMAHA DAILY BEE.\nTWENTIETH YEAR. OMAHA, WEDNESDAY MORNING. JUNE 25, 1890. NUMBER 7.\nLICKED UP BY THE FLAMES,\nAn Incendiary Wreaks His Vengeance on Blue Hill, Nebraska.\nNEARLY TWENTY STORES BLOTTED OUT,\nThe Amount of Damage Done Is Estimated at Over Fifty Thousand Dollars, With Comparatively Little Insurance.\nBLUE HILL, Neb., June 24. (Special Telegraph to THE BEE.) At 2:30 this morning a fire broke out simultaneously in two places on the north side of Main street in Blue Hill. The one at the opera house, at almost the extreme east end of the street, was extinguished by the efforts of O. C. J. Longman, Mrs. B. H. Munson and the girl help at the Munson House.\n\ncorrupted: THE OMAHA ! DAILY BEE.\nTWENTIETH YEAR. OMAHA. WEDNESDAY JMjgNING. ( ! JUNE 25. 1890. NUMBER 7.\nLICKED UP BY THE FLAMES , An Incendiary Wreaks His Vengeance o Blue Hill , Nebraska. NEARLY TWENTY STORES BLOTTED OUT , Tlio Amount of lnmnc Done Iloimlily Kutlmnted .nt Over Fifty Thousand DollurH , With Comparatively Little Insurance.\nBLUB HIM , Neb. , Juno 24. ( Special Tele-pram to TUB BBK. ) At 2M : this morning a.flro broke out simultaneously In two places on the north sldo of Main street in Blue Hill. The ono at the opera house , nt almost the ex treme cast end of the street , was extinguished by the efforts of O. C. 1C. Lolgman , Mrs. B. II. Munson and the girl help at the Muuson Louse. I\n\n---\n\noriginal: BOARD OF EDUCATION IN TROUBLE With a Contractor, MORE TEACHERS INCREASED Efforts to Secure the Best Teachers of the State, Nebraska. May 2. [Special to THE BEAR.] The Board of Education is very anxious to interview one J. M. Anderson of Des Moines, the contractor who built the Clinton School house on North Twenty-eighth Street. The building was faultily constructed, and living been a source of considerable expense for repairs, the board has not paid Anderson in full for his work.\n\ncorrupted: Board of Education In Trouble with a.Ooutractor , MARIES OF TEACHERS INCREASED . VFm Nrcrm ijIn Onlrr to Secure the 8 T lrr * 'if tli llott t'lfKn of Kiln * ciuorn New .Scute ' Com- | > rlitntlun , Neb . May 2. [ Special to TUB EB.J The Hoard of Education Is very nnx- mi to Interview ono .1. M. Anderson of DCS lolnes. the contractor who built the Clinton Miool house on North Twenty-eighth street , ho building was faultily constructed , and living been a source of consldrablc expense or repairs , the board lias not paid Anderson n full for his work.\n\n---\n\nGiven the original text below, provide a corrupted version, using the examples as a guide on how the text may become corrupted:\n\noriginal: {text}\n\ncorrupted:",
         },
     ]
 
@@ -30,7 +30,7 @@ def get_chat_request(text, model="gpt-4o"):
         "model": model,
         "messages": messages,
         "temperature": 1,
-        "max_tokens": 400,
+        "max_tokens": 1000,
         "top_p": 1,
         "frequency_penalty": 0,
         "presence_penalty": 0,
@@ -70,7 +70,7 @@ def clean_up_requests(
         exit(0)
 
 
-def get_openai_concept_embeddings(dataset):
+def get_openai_chat_responses(dataset):
     atexit.register(clean_up_requests)
     signal.signal(signal.SIGINT, clean_up_requests)
     signal.signal(signal.SIGTERM, clean_up_requests)
@@ -114,8 +114,8 @@ def process_requests_from_json(file_responses):
         entry = json.loads(line)
 
         message = entry[0]["messages"][1]["content"]
-        parts = message.split("original```")
-        input_text = [part.split("```")[0] for part in parts[1:]][-1]
+        parts = message.split("original: ")
+        input_text = [part.split("\n\n")[0] for part in parts[1:]][-1]
         corrupt_text = entry[1]["choices"][0]["message"]["content"]
         total_tokens += entry[1]["usage"]["total_tokens"]
 
@@ -134,13 +134,13 @@ def process_requests_from_json(file_responses):
 
 if __name__ == "__main__":
     dataset = load_dataset("fancyzhx/ag_news", split="train")
-    filtered_dataset = dataset.filter(lambda x: 300 < len(x["text"]) < 1000)
+    filtered_dataset = dataset.filter(lambda x: 300 < len(x["text"]) < 2000)
     random.seed(42)
-    sampled_dataset = filtered_dataset.shuffle(seed=42).select(range(10))
+    sampled_dataset = filtered_dataset.shuffle(seed=42).select(range(100))
 
     # for idx, sample in enumerate(sampled_dataset):
     #     print(sample["text"].replace('\\', ''))
     #     if idx > 5:
     #         break
 
-    get_openai_concept_embeddings(sampled_dataset)
+    get_openai_chat_responses(sampled_dataset)
