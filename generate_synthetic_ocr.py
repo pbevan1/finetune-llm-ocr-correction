@@ -138,9 +138,4 @@ if __name__ == "__main__":
     random.seed(42)
     sampled_dataset = filtered_dataset.shuffle(seed=42).select(range(100))
 
-    # for idx, sample in enumerate(sampled_dataset):
-    #     print(sample["text"].replace('\\', ''))
-    #     if idx > 5:
-    #         break
-
     get_openai_chat_responses(sampled_dataset)
