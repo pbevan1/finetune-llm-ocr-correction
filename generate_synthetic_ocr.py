@@ -6,7 +6,6 @@ import os
 from openai import OpenAI
 import pandas as pd
 import random
-import re
 import signal
 import time
 
@@ -14,17 +13,17 @@ from api_request_parallel_processor import process_api_requests_from_file
 
 
 def get_chat_request(text, model="gpt-4o"):
-    text = text.replace('\\', '')
+    text = text.replace("\\", "")
 
-    messages=[
-    {
-        "role": "system",
-        "content": "You are an expert at creating examples of text that has been corrupted while being read by OCR from old newspapers. You respond only with the corrupted text and nothing else. Don't include the surrounding triple backticks (```) in your response, only the text inside them."
-    },
-    {
-        "role": "user",
-        "content": f"Here are two examples of corrupted text and their corrections:\n\noriginal```\nTHE OMAHA DAILY BEE, TUESDAY, JUNE 24, 1890 NEWS ABOUT THE BLUFFS Comparatively Little Damage Done by Sunday Night's Storm, SOME EXCEEDINGLY NARROW ESCAPES An Odyssean Memorial Communication Department at H.E. An Unfounded Storm Notice.\n```\ncorrupted```\nTHHJ C M A 14 A1 HAM p 0 _ _ THE OMAHA DAILY BEE , TUEBPAY , JUNE 24 , 1890 , _ _ NEWS ABOUT THE BLUFFS Comparatively Little Damage Done b , Sunday Night's Storm , I , SOME EXCEEDINGLY NARROW ESCAPES An OdiirolloxvH * . Memorial CoiniiionccniKiit I'ro rniiunc nt Ht. AuniliMtiy An Un- fondcd Htiinof NotcH.\n```\n---\noriginal```\nTHE OMAHA DAILY BEE.\nTWENTIETH YEAR. OMAHA, WEDNESDAY MORNING. JUNE 25, 1890. NUMBER 7.\nLICKED UP BY THE FLAMES,\nAn Incendiary Wreaks His Vengeance on Blue Hill, Nebraska.\nNEARLY TWENTY STORES BLOTTED OUT,\nThe Amount of Damage Done Is Estimated at Over Fifty Thousand Dollars, With Comparatively Little Insurance.\nBLUE HILL, Neb., June 24. (Special Telegraph to THE BEE.) At 2:30 this morning a fire broke out simultaneously in two places on the north side of Main street in Blue Hill. The one at the opera house, at almost the extreme east end of the street, was extinguished by the efforts of O. C. J. Longman, Mrs. B. H. Munson and the girl help at the Munson House.\n```\ncorrupted```\nTHE OMAHA ! DAILY BEE.\nTWENTIETH YEAR. OMAHA. WEDNESDAY JMjgNING. ( ! JUNE 25. 1890. NUMBER 7.\nLICKED UP BY THE FLAMES , An Incendiary Wreaks His Vengeance o Blue Hill , Nebraska. NEARLY TWENTY STORES BLOTTED OUT , Tlio Amount of lnmnc Done Iloimlily Kutlmnted .nt Over Fifty Thousand DollurH , With Comparatively Little Insurance.\nBLUB HIM , Neb. , Juno 24. ( Special Tele-pram to TUB BBK. ) At 2M : this morning a.flro broke out simultaneously In two places on the north sldo of Main street in Blue Hill. The ono at the opera house , nt almost the ex treme cast end of the street , was extinguished by the efforts of O. C. 1C. Lolgman , Mrs. B. II. Munson and the girl help at the Muuson Louse. I\n```\n\nGiven the original text below, provide a corrupted version, using the examples as a guide on how the text may become corrupted:\n\noriginal```{text}```"
-        }
+    messages = [
+        {
+            "role": "system",
+            "content": "You are an expert at creating examples of text that has been corrupted while being read by OCR from old newspapers. You respond only with the corrupted text and nothing else. Don't include the surrounding triple backticks (```) in your response, only the text inside them.",
+        },
+        {
+            "role": "user",
+            "content": f"Here are two examples of corrupted text and their corrections:\n\noriginal```\nTHE OMAHA DAILY BEE, TUESDAY, JUNE 24, 1890 NEWS ABOUT THE BLUFFS Comparatively Little Damage Done by Sunday Night's Storm, SOME EXCEEDINGLY NARROW ESCAPES An Odyssean Memorial Communication Department at H.E. An Unfounded Storm Notice.\n```\ncorrupted```\nTHHJ C M A 14 A1 HAM p 0 _ _ THE OMAHA DAILY BEE , TUEBPAY , JUNE 24 , 1890 , _ _ NEWS ABOUT THE BLUFFS Comparatively Little Damage Done b , Sunday Night's Storm , I , SOME EXCEEDINGLY NARROW ESCAPES An OdiirolloxvH * . Memorial CoiniiionccniKiit I'ro rniiunc nt Ht. AuniliMtiy An Un- fondcd Htiinof NotcH.\n```\n---\noriginal```\nTHE OMAHA DAILY BEE.\nTWENTIETH YEAR. OMAHA, WEDNESDAY MORNING. JUNE 25, 1890. NUMBER 7.\nLICKED UP BY THE FLAMES,\nAn Incendiary Wreaks His Vengeance on Blue Hill, Nebraska.\nNEARLY TWENTY STORES BLOTTED OUT,\nThe Amount of Damage Done Is Estimated at Over Fifty Thousand Dollars, With Comparatively Little Insurance.\nBLUE HILL, Neb., June 24. (Special Telegraph to THE BEE.) At 2:30 this morning a fire broke out simultaneously in two places on the north side of Main street in Blue Hill. The one at the opera house, at almost the extreme east end of the street, was extinguished by the efforts of O. C. J. Longman, Mrs. B. H. Munson and the girl help at the Munson House.\n```\ncorrupted```\nTHE OMAHA ! DAILY BEE.\nTWENTIETH YEAR. OMAHA. WEDNESDAY JMjgNING. ( ! JUNE 25. 1890. NUMBER 7.\nLICKED UP BY THE FLAMES , An Incendiary Wreaks His Vengeance o Blue Hill , Nebraska. NEARLY TWENTY STORES BLOTTED OUT , Tlio Amount of lnmnc Done Iloimlily Kutlmnted .nt Over Fifty Thousand DollurH , With Comparatively Little Insurance.\nBLUB HIM , Neb. , Juno 24. ( Special Tele-pram to TUB BBK. ) At 2M : this morning a.flro broke out simultaneously In two places on the north sldo of Main street in Blue Hill. The ono at the opera house , nt almost the ex treme cast end of the street , was extinguished by the efforts of O. C. 1C. Lolgman , Mrs. B. II. Munson and the girl help at the Muuson Louse. I\n```\n\nGiven the original text below, provide a corrupted version, using the examples as a guide on how the text may become corrupted:\n\noriginal```{text}```",
+        },
     ]
 
     request = {
@@ -43,9 +42,7 @@ def get_chat_request(text, model="gpt-4o"):
 def get_openai_rate_limits(model="gpt-4o"):
     client = OpenAI()
     openai_headers = client.chat.completions.with_raw_response.create(
-        messages=[
-            {"role": "user", "content": "Respond with a full stop only (.):"}
-        ],
+        messages=[{"role": "user", "content": "Respond with a full stop only (.):"}],
         model=model,
         stop=["."],
         max_tokens=1,
@@ -70,7 +67,7 @@ def clean_up_requests(
         os.remove(responses_file_path)
         print("Cached responses temp file deleted.")
     if signum is not None:
-        exit(0)  # Only exit if called by a signal
+        exit(0)
 
 
 def get_openai_concept_embeddings(dataset):
@@ -117,8 +114,8 @@ def process_requests_from_json(file_responses):
         entry = json.loads(line)
 
         message = entry[0]["messages"][1]["content"]
-        parts = message.split('original```')
-        input_text = [part.split('```')[0] for part in parts[1:]][-1]
+        parts = message.split("original```")
+        input_text = [part.split("```")[0] for part in parts[1:]][-1]
         corrupt_text = entry[1]["choices"][0]["message"]["content"]
         total_tokens += entry[1]["usage"]["total_tokens"]
 
@@ -136,8 +133,8 @@ def process_requests_from_json(file_responses):
 
 
 if __name__ == "__main__":
-    dataset = load_dataset('fancyzhx/ag_news', split='train')
-    filtered_dataset = dataset.filter(lambda x: 300 < len(x['text']) < 1000)
+    dataset = load_dataset("fancyzhx/ag_news", split="train")
+    filtered_dataset = dataset.filter(lambda x: 300 < len(x["text"]) < 1000)
     random.seed(42)
     sampled_dataset = filtered_dataset.shuffle(seed=42).select(range(10))
 
@@ -147,4 +144,3 @@ if __name__ == "__main__":
     #         break
 
     get_openai_concept_embeddings(sampled_dataset)
-
