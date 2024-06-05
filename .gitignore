@@ -1,5 +1,6 @@
 # Added by me
 *.csv
+*.jsonl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

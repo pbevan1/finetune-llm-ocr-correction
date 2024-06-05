@@ -8,17 +8,18 @@ import pandas as pd
 import random
 import signal
 import time
+import re
 
 from api_request_parallel_processor import process_api_requests_from_file
 
 
-def get_chat_request(text, model="gpt-4o"):
+def get_chat_request(text, index, model="gpt-4o"):
     text = text.replace("\\", "")
 
     messages = [
         {
             "role": "system",
-            "content": "You are an expert at creating examples of text that has been corrupted while being read by OCR from old newspapers. You respond only with the corrupted text and nothing else. Don't include the surrounding triple backticks (```) in your response, only the text inside them.",
+            "content": "You are an expert at creating examples of text that has been corrupted during OCR processing of historical documents. You respond only with the corrupted text and nothing else.",
         },
         {
             "role": "user",
@@ -34,6 +35,7 @@ def get_chat_request(text, model="gpt-4o"):
         "top_p": 1,
         "frequency_penalty": 0,
         "presence_penalty": 0,
+        "metadata": {"index": index},
     }
 
     return json.dumps(request)
@@ -76,12 +78,14 @@ def get_openai_chat_responses(dataset):
     signal.signal(signal.SIGTERM, clean_up_requests)
     requests_file_path = "requests.jsonl"
     responses_file_path = "output.jsonl"
-    with open(requests_file_path, "w", encoding="utf-8") as file_requests, open(
-        responses_file_path, "w", encoding="utf-8"
-    ) as file_responses:
+    with open(requests_file_path, "w", encoding="utf-8") as file_requests:
         for row in dataset:
-            file_requests.write(f"{get_chat_request(row['text'])}\n")
-        process_requests_from_json(file_responses)
+            file_requests.write(f"{get_chat_request(row['text'], row['index'])}\n")
+
+    with open(responses_file_path, "w", encoding="utf-8") as file_responses:
+        df = process_requests_from_json(file_responses)
+        df = df.merge(dataset.to_pandas(), on="index")
+        df.to_csv("corrupt_text.csv", index=False)
 
 
 def process_requests_from_json(file_responses):
@@ -113,29 +117,48 @@ def process_requests_from_json(file_responses):
     for line in lines:
         entry = json.loads(line)
 
-        message = entry[0]["messages"][1]["content"]
-        parts = message.split("original: ")
-        input_text = [part.split("\n\n")[0] for part in parts[1:]][-1]
-        corrupt_text = entry[1]["choices"][0]["message"]["content"]
-        total_tokens += entry[1]["usage"]["total_tokens"]
+        corrupt_text = entry[0]["choices"][0]["message"]["content"]
+        index = entry[1]["index"]
+        total_tokens += entry[0]["usage"]["total_tokens"]
 
-        data.append({"text": str(input_text), "corrupt_text": corrupt_text})
+        data.append({"index": index, "corrupt_text": corrupt_text})
 
     end = time.time()
     time_taken = end - start
 
     df = pd.DataFrame(data)
-    df.to_csv("corrupt_text.csv", index=False)
 
     print(
         f"Time taken to process {total_tokens} tokens: {round(time_taken,2)} seconds ({round(total_tokens/time_taken, 2)}tok/s)"
     )
 
+    return df
+
+
+def filter_text(entry):
+    text = entry["text"]
+    # Regular expression to detect common HTML entities and css
+    html_entity_pattern = re.compile(r"&[a-zA-Z]+;|#[0-9a-fA-F]{3,6}")
+    css_pattern = re.compile(r"(font|color|size|face)=[\'\"]?.+[\'\"]?", re.IGNORECASE)
+
+    has_html_entities = bool(html_entity_pattern.search(text))
+    has_css_patterns = bool(css_pattern.search(text))
+    is_valid_length = 250 < len(text) < 2500
+    contains_http = "http" in text
+
+    return (
+        not (has_html_entities or has_css_patterns)
+        and is_valid_length
+        and not contains_http
+    )
+
 
 if __name__ == "__main__":
     dataset = load_dataset("fancyzhx/ag_news", split="train")
-    filtered_dataset = dataset.filter(lambda x: 300 < len(x["text"]) < 2000)
+    dataset = dataset.map(lambda x, idx: {"index": idx}, with_indices=True)
+    # Remove entries with HTML entities, CSS patterns, invalid length, or HTTP links
+    filtered_dataset = dataset.filter(filter_text)
     random.seed(42)
-    sampled_dataset = filtered_dataset.shuffle(seed=42).select(range(100))
+    sampled_dataset = filtered_dataset.shuffle(seed=42).select(range(10000))
 
     get_openai_chat_responses(sampled_dataset)

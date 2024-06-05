@@ -1,3 +1,4 @@
+beautifulsoup4==4.12.3
 datasets==2.19.1
 openai==1.30.5
 pytest==8.2.1
