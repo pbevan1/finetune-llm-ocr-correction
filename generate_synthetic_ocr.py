@@ -85,7 +85,19 @@ def get_openai_chat_responses(dataset):
     with open(responses_file_path, "w", encoding="utf-8") as file_responses:
         df = process_requests_from_json(file_responses)
         df = df.merge(dataset.to_pandas(), on="index")
-        df.to_csv("corrupt_text.csv", index=False)
+        df.to_csv("ft_data/corrupt_text.csv", index=False)
+
+    # Create Alpaca ft jsonl dataset
+    with open("ft_data/alpaca_data.jsonl", "w", encoding="utf-8") as file_alpaca:
+        for row in df.itertuples():
+            alpaca_data = json.dumps(
+                {
+                    "instruction": "You are an assistant that takes a piece of text that has been corrupted during OCR digitisation, and produce a corrected version of the same text.",
+                    "input": row.corrupt_text,
+                    "output": row.text,
+                }
+            )
+            file_alpaca.write(f"{alpaca_data}\n")
 
 
 def process_requests_from_json(file_responses):
@@ -101,8 +113,8 @@ def process_requests_from_json(file_responses):
             save_filepath=str(responses_file_path),
             request_url=str("https://api.openai.com/v1/chat/completions"),
             api_key=str(os.environ["OPENAI_API_KEY"]),
-            max_requests_per_minute=float(500 * 0.75),  # *0.75 to give headroom
-            max_tokens_per_minute=float(tpm * 0.75),
+            max_requests_per_minute=float(5000 * 0.85),  # *0.85 to give headroom
+            max_tokens_per_minute=float(tpm * 0.85),
             token_encoding_name="cl100k_base",
             max_attempts=int(10),
             logging_level=int(30),
