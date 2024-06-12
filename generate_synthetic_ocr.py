@@ -11,6 +11,7 @@ import time
 import re
 
 from api_request_parallel_processor import process_api_requests_from_file
+from prepare_hf_dataset import prepare_alpaca_data
 
 
 def get_chat_request(text, index, model="gpt-4o"):
@@ -88,16 +89,7 @@ def get_openai_chat_responses(dataset):
         df.to_csv("ft_data/corrupt_text.csv", index=False)
 
     # Create Alpaca ft jsonl dataset
-    with open("ft_data/alpaca_data.jsonl", "w", encoding="utf-8") as file_alpaca:
-        for row in df.itertuples():
-            alpaca_data = json.dumps(
-                {
-                    "instruction": "You are an assistant that takes a piece of text that has been corrupted during OCR digitisation, and produce a corrected version of the same text.",
-                    "input": row.corrupt_text,
-                    "output": row.text,
-                }
-            )
-            file_alpaca.write(f"{alpaca_data}\n")
+    prepare_alpaca_data(df)
 
 
 def process_requests_from_json(file_responses):

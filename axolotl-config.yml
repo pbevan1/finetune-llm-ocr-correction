@@ -1,6 +1,6 @@
-base_model: mistralai/Mistral-7B-v0.1
-model_type: MistralForCausalLM
-tokenizer_type: LlamaTokenizer
+base_model: meta-llama/Meta-Llama-3-8B
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
 is_mistral_derived_model: true
 
 load_in_8bit: false
@@ -13,18 +13,17 @@ seed: 49
 
 datasets:
   - path: ft_data/alpaca_data.jsonl
-    type: sharegpt
-    conversation: alpaca
+    type: alpaca
 dataset_prepared_path: last_run_prepared
 val_set_size: 0.1
 output_dir: ./qlora-alpaca-out
-hub_model_id: hamel/hc-mistral-alpaca
+hub_model_id: pbevan11/llama-3-8b-ocr-correction
 
 adapter: qlora
 lora_model_dir:
 
-sequence_len: 896
-sample_packing: false
+sequence_len: 4096
+sample_packing: true
 pad_to_sequence_len: true
 
 lora_r: 32
@@ -41,25 +40,21 @@ lora_target_modules:
   - k_proj
   - o_proj
 
-wandb_project: hc-axolotl-mistral
-wandb_entity: hamelsmu
+wandb_project: sncds/ocr-ft
+wandb_entity: peterbevan
 
 gradient_accumulation_steps: 4
-micro_batch_size: 16
-eval_batch_size: 16
-num_epochs: 3
-optimizer: adamw_bnb_8bit
+micro_batch_size: 2 # was 16
+eval_batch_size: 2 # was 16
+num_epochs: 4
+optimizer: paged_adamw_32bit
 lr_scheduler: cosine
 learning_rate: 0.0002
-max_grad_norm: 1.0
-adam_beta2: 0.95
-adam_epsilon: 0.00001
-save_total_limit: 12
 
 train_on_inputs: false
 group_by_length: false
-bf16: true
-fp16: false
+bf16: auto
+fp16:
 tf32: false
 
 gradient_checkpointing: true
@@ -73,17 +68,14 @@ flash_attention: true
 loss_watchdog_threshold: 5.0
 loss_watchdog_patience: 3
 
-warmup_steps: 20
+warmup_steps: 10
 evals_per_epoch: 4
 eval_table_size:
-eval_table_max_new_tokens: 128
-saves_per_epoch: 6
+saves_per_epoch: 1
 debug:
+deepspeed:
 weight_decay: 0.0
 fsdp:
 fsdp_config:
 special_tokens:
-  bos_token: "<s>"
-  eos_token: "</s>"
-  unk_token: "<unk>"
-save_safetensors: true
+  pad_token: "<|end_of_text|>"
