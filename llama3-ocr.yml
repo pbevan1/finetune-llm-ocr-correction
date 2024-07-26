@@ -1,7 +1,6 @@
 base_model: meta-llama/Meta-Llama-3-8B
 model_type: AutoModelForCausalLM
 tokenizer_type: AutoTokenizer
-is_mistral_derived_model: true
 
 load_in_8bit: false
 load_in_4bit: true
@@ -24,6 +23,7 @@ lora_model_dir:
 
 sequence_len: 4096
 sample_packing: true
+eval_sample_packing: false
 pad_to_sequence_len: true
 
 lora_r: 32
@@ -32,21 +32,15 @@ lora_dropout: 0.05
 lora_target_linear: true
 lora_fan_in_fan_out:
 lora_target_modules:
-  - gate_proj
-  - down_proj
-  - up_proj
-  - q_proj
-  - v_proj
-  - k_proj
-  - o_proj
 
-wandb_project: sncds/ocr-ft
-wandb_entity: peterbevan
+wandb_project: ocr-ft
+wandb_entity: sncds
+wandb_name: test
 
 gradient_accumulation_steps: 4
 micro_batch_size: 2 # was 16
 eval_batch_size: 2 # was 16
-num_epochs: 4
+num_epochs: 2
 optimizer: paged_adamw_32bit
 lr_scheduler: cosine
 learning_rate: 0.0002

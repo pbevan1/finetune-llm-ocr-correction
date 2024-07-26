@@ -21,5 +21,6 @@ if __name__ == "__main__":
 
     # Load dataset from Hugging Face repo
     dataset = load_dataset("pbevan11/synthetic-ocr-correction-gpt4o")
-    df = pd.DataFrame(dataset["train"])
-    prepare_alpaca_data(df)
+    df_train = pd.DataFrame(dataset["train"])
+    df_train = pd.DataFrame(dataset["test"])
+    prepare_alpaca_data(df_train)
