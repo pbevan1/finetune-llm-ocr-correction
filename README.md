@@ -1,6 +1,6 @@
 # llama-3.1-8b-ocr-correction
 
-See [pbevan11/synthetic-ocr-correction-gpt4o](https://huggingface.co/datasets/pbevan11/llama-3.1-8b-ocr-correction) for model weights.
+See [pbevan11/synthetic-ocr-correction-gpt4o](https://huggingface.co/pbevan11/llama-3.1-8b-ocr-correction) for model weights.
 
 This model is a fine-tuned version of [meta-llama/Meta-Llama-3.1-8B](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B) on the [pbevan11/synthetic-ocr-correction-gpt4o](https://huggingface.co/datasets/pbevan11/synthetic-ocr-correction-gpt4o) dataset.
 
